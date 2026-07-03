@@ -197,11 +197,24 @@ class HuffmanHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                     decomp_size = len(decompressed_data)
                     factor = decomp_size / comp_size if comp_size > 0 else 0.0
 
-                    # If the file originally was compressed from docx, we output text.
-                    # Standard decompression restores raw bytes written during compression.
+                    # Determine decompressed filename extension
+                    clean_base = base
+                    if clean_base.lower().endswith('.pdf'):
+                        clean_base = clean_base[:-4]
+                    elif clean_base.lower().endswith('.docx'):
+                        clean_base = clean_base[:-5]
+                    elif clean_base.lower().endswith('.txt'):
+                        clean_base = clean_base[:-4]
+
+                    out_ext = ".txt"
+                    if decompressed_data.startswith(b"%PDF"):
+                        out_ext = ".pdf"
+                    elif decompressed_data.startswith(b"PK\x03\x04"):
+                        out_ext = ".docx"
+
                     response_data = {
                         "success": True,
-                        "filename": f"{base}_recovered.txt",
+                        "filename": f"{clean_base}_recovered{out_ext}",
                         "content_base64": base64.b64encode(decompressed_data).decode('utf-8'),
                         "stats": {
                             "comp_size": comp_size,

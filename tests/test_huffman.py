@@ -531,6 +531,27 @@ class TestBinarySupport(unittest.TestCase):
                 
             self.assertEqual(recovered_data, raw_bytes)
 
+    def test_pdf_roundtrip(self):
+        # Generate mock PDF data starting with %PDF-1.4
+        pdf_data = b"%PDF-1.4\n%mock pdf content\n%%EOF"
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            input_path = os.path.join(tmpdir, "document.pdf")
+            comp_path = os.path.join(tmpdir, "document.huf")
+            recovered_path = os.path.join(tmpdir, "recovered.pdf")
+            
+            with open(input_path, "wb") as f:
+                f.write(pdf_data)
+                
+            from main import run_compress, run_decompress
+            run_compress(input_path, comp_path, show_stats=False)
+            run_decompress(comp_path, recovered_path, show_stats=False, verify_path=input_path)
+            
+            with open(recovered_path, "rb") as f:
+                recovered_data = f.read()
+                
+            self.assertEqual(recovered_data, pdf_data)
+
 
 if __name__ == "__main__":
     unittest.main()

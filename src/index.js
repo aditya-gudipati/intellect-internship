@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnCompress.classList.add('active');
             btnDecompress.classList.remove('active');
             modeIndicator.style.transform = 'translateX(0)';
-            document.getElementById('formats-hint').textContent = 'Supports .txt, .docx files';
+            document.getElementById('formats-hint').textContent = 'Supports .txt, .docx, .pdf files';
         } else {
             btnCompress.classList.remove('active');
             btnDecompress.classList.add('active');
